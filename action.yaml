@@ -3,58 +3,76 @@ description: "A GitHub Action to install a specific version of the demp Go CLI f
 
 inputs:
   version:
-    description: "Version of demp to install (e.g., v1.0.0)"
+    description: "Version of demp to install (e.g., 1.0.0)"
     required: true
-    default: "v1.0.0"
+    default: "1.0.0"
 
 runs:
   using: "composite"
   steps:
-    - name: Setup environment variables
+    - name: Run install script
       shell: bash
       run: |
-        set -euo pipefail
-        VERSION="${{ inputs.version }}"
-        OS=$(uname | tr '[:upper:]' '[:lower:]')
-        ARCH=$(uname -m)
-        if [[ "${ARCH}" == "x86_64" ]]; then
-          ARCH="amd64"
-        fi
-        echo "VERSION=${VERSION}" >> $GITHUB_ENV
-        echo "OS=${OS}" >> $GITHUB_ENV
-        echo "ARCH=${ARCH}" >> $GITHUB_ENV
-        echo "BASE_URL=https://github.com/rianfowler/demp/releases/download/${VERSION}" >> $GITHUB_ENV
-        echo "BINARY_NAME=demp_${VERSION}_${OS}_${ARCH}.tar.gz" >> $GITHUB_ENV
-        echo "CHECKSUM_NAME=demp_${VERSION}_checksums.txt" >> $GITHUB_ENV
-    - name: Download demp binary
-      shell: bash
-      run: |
-        echo "Downloading ${BINARY_NAME} from ${BASE_URL}..."
-        curl -sSL -o "${BINARY_NAME}" "${BASE_URL}/${BINARY_NAME}"
-    - name: Download checksum file
-      shell: bash
-      run: |
-        echo "Downloading checksum file ${CHECKSUM_NAME} from ${BASE_URL}..."
-        curl -sSL -o "${CHECKSUM_NAME}" "${BASE_URL}/${CHECKSUM_NAME}"
-    - name: Verify checksum
-      shell: bash
-      run: |
-        EXPECTED_CHECKSUM=$(grep "${BINARY_NAME}" "${CHECKSUM_NAME}" | awk '{print $1}')
-        if [ -z "$EXPECTED_CHECKSUM" ]; then
-          echo "ERROR: Checksum for ${BINARY_NAME} not found in ${CHECKSUM_NAME}."
-          exit 1
-        fi
-        ACTUAL_CHECKSUM=$(sha256sum "${BINARY_NAME}" | awk '{print $1}')
-        if [ "${EXPECTED_CHECKSUM}" != "${ACTUAL_CHECKSUM}" ]; then
-          echo "ERROR: Checksum verification failed. Expected ${EXPECTED_CHECKSUM} but got ${ACTUAL_CHECKSUM}."
-          exit 1
-        fi
-        echo "Checksum verification passed."
-    - name: Extract and install demp
-      shell: bash
-      run: |
-        tar -xzf "${BINARY_NAME}"
-        # Assuming the tarball extracts a binary named "demp"
-        chmod +x demp
-        sudo mv demp /usr/local/bin/demp
-        echo "demp ${VERSION} installed successfully!"
+        chmod +x ./install-demp.sh
+        ./install-demp.sh "${{ inputs.version }}"
+
+# name: "Install demp"
+# description: "A GitHub Action to install a specific version of the demp Go CLI from https://github.com/rianfowler/demp."
+
+# inputs:
+#   version:
+#     description: "Version of demp to install (e.g., 1.0.0)"
+#     required: true
+#     default: "1.0.0"
+
+# runs:
+#   using: "composite"
+#   steps:
+#     - name: Setup environment variables
+#       shell: bash
+#       run: |
+#         set -euo pipefail
+#         VERSION="${{ inputs.version }}"
+#         OS=$(uname | tr '[:upper:]' '[:lower:]')
+#         ARCH=$(uname -m)
+#         if [[ "${ARCH}" == "x86_64" ]]; then
+#           ARCH="amd64"
+#         fi
+#         echo "VERSION=${VERSION}" >> $GITHUB_ENV
+#         echo "OS=${OS}" >> $GITHUB_ENV
+#         echo "ARCH=${ARCH}" >> $GITHUB_ENV
+#         echo "BASE_URL=https://github.com/rianfowler/demp/releases/download/${VERSION}" >> $GITHUB_ENV
+#         echo "BINARY_NAME=demp_${VERSION}_${OS}_${ARCH}.tar.gz" >> $GITHUB_ENV
+#         echo "CHECKSUM_NAME=demp_${VERSION}_checksums.txt" >> $GITHUB_ENV
+#     - name: Download demp binary
+#       shell: bash
+#       run: |
+#         echo "Downloading ${BINARY_NAME} from ${BASE_URL}..."
+#         curl -sSL -o "${BINARY_NAME}" "${BASE_URL}/${BINARY_NAME}"
+#     - name: Download checksum file
+#       shell: bash
+#       run: |
+#         echo "Downloading checksum file ${CHECKSUM_NAME} from ${BASE_URL}..."
+#         curl -sSL -o "${CHECKSUM_NAME}" "${BASE_URL}/${CHECKSUM_NAME}"
+#     - name: Verify checksum
+#       shell: bash
+#       run: |
+#         EXPECTED_CHECKSUM=$(grep "${BINARY_NAME}" "${CHECKSUM_NAME}" | awk '{print $1}')
+#         if [ -z "$EXPECTED_CHECKSUM" ]; then
+#           echo "ERROR: Checksum for ${BINARY_NAME} not found in ${CHECKSUM_NAME}."
+#           exit 1
+#         fi
+#         ACTUAL_CHECKSUM=$(sha256sum "${BINARY_NAME}" | awk '{print $1}')
+#         if [ "${EXPECTED_CHECKSUM}" != "${ACTUAL_CHECKSUM}" ]; then
+#           echo "ERROR: Checksum verification failed. Expected ${EXPECTED_CHECKSUM} but got ${ACTUAL_CHECKSUM}."
+#           exit 1
+#         fi
+#         echo "Checksum verification passed."
+#     - name: Extract and install demp
+#       shell: bash
+#       run: |
+#         tar -xzf "${BINARY_NAME}"
+#         # Assuming the tarball extracts a binary named "demp"
+#         chmod +x demp
+#         sudo mv demp /usr/local/bin/demp
+#         echo "demp ${VERSION} installed successfully!"
