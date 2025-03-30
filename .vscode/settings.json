@@ -1,0 +1,6 @@
+{
+  "yaml.schemas": {
+    "Kubernetes": "*.yaml",
+    "https://json.schemastore.org/github-action.json": "file:///Users/midas/Code/actions-install-demp/action.yaml"
+  }
+}
