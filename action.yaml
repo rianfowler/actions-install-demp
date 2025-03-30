@@ -1,6 +1,9 @@
 name: "Install demp"
 description: "A GitHub Action to install a specific version of the demp Go CLI from https://github.com/rianfowler/demp."
 
+env:
+  KEY_ID: 092017BA1C395379
+
 inputs:
   version:
     description: "Version of demp to install (e.g., 1.0.0)"
@@ -14,4 +17,4 @@ runs:
       shell: bash
       run: |
         chmod +x "${{ github.action_path }}/install-demp.sh"
-        "${{ github.action_path }}/install-demp.sh" "${{ inputs.version }}"
+        "${{ github.action_path }}/install-demp.sh" "${{ inputs.version }}" "${{ env.KEY_ID }}"
