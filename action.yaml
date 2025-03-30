@@ -1,9 +1,6 @@
 name: "Install demp"
 description: "A GitHub Action to install a specific version of the demp Go CLI from https://github.com/rianfowler/demp."
 
-permissions:
-  contents: write
-
 inputs:
   version:
     description: "Version of demp to install (e.g., v1.0.0)"
