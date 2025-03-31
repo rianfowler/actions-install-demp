@@ -12,9 +12,12 @@ inputs:
 
 runs:
   using: "composite"
+  env:
+    VERSION: ${{ inputs.version }}
+    KEY: ${{ env.KEY_ID }}
   steps:
     - name: Run install script
       shell: bash
       run: |
         chmod +x "${{ github.action_path }}/install-demp.sh"
-        "${{ github.action_path }}/install-demp.sh" "${{ inputs.version }}" "${{ env.KEY_ID }}"
+        "${{ github.action_path }}/install-demp.sh" ${VERSION} ${KEY}
