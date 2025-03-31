@@ -9,12 +9,12 @@ inputs:
 
 runs:
   using: "composite"
-  env:
-    VERSION: ${{ inputs.version }}
-    KEY: "092017BA1C395379" # Hardcoded public key ID
   steps:
     - name: Run install script
       shell: bash
+      env:
+        VERSION: ${{ inputs.version }}
+        KEY: "092017BA1C395379" # Hardcoded public key ID
       run: |
         chmod +x "${{ github.action_path }}/install-demp.sh"
         "${{ github.action_path }}/install-demp.sh" ${VERSION} ${KEY}
