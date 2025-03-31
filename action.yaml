@@ -1,9 +1,6 @@
 name: "Install demp"
 description: "A GitHub Action to install a specific version of the demp Go CLI from https://github.com/rianfowler/demp."
 
-env:
-  KEY_ID: 092017BA1C395379
-
 inputs:
   version:
     description: "Version of demp to install (e.g., 1.0.0)"
@@ -14,7 +11,7 @@ runs:
   using: "composite"
   env:
     VERSION: ${{ inputs.version }}
-    KEY: ${{ env.KEY_ID }}
+    KEY: "092017BA1C395379" # Hardcoded public key ID
   steps:
     - name: Run install script
       shell: bash
